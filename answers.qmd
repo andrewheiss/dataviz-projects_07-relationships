@@ -68,7 +68,7 @@ library(marginaleffects)
 
 ## Data description
 
-This data comes from <https://www.basketball-reference.com/wnba/players/> and cntains information on basketball players from the 2019 season. The data was originally collected for the book [*Bayes Rules! An Introduction to Applied Bayesian Modeling*](https://www.bayesrulesbook.com/) and was included in the [{bayesrules} package](https://bayes-rules.github.io/bayesrules/docs/index.html) as `basketball`.
+This data comes from <https://www.basketball-reference.com/wnba/players/> and contains information on WNBA basketball players from the 2019 season. The data was originally collected for the book [*Bayes Rules! An Introduction to Applied Bayesian Modeling*](https://www.bayesrulesbook.com/) and was included in the [{bayesrules} package](https://bayes-rules.github.io/bayesrules/docs/index.html) as `basketball`.
 
 There are 33 columns, and [they're documented here](https://bayes-rules.github.io/bayesrules/docs/reference/basketball.html)---make sure you consult that page!
 
