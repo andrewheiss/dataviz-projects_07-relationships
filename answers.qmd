@@ -13,9 +13,23 @@ format:
         dpi: 300
   typst:
     toc: true
+    toc-title: Contents
+    output-file: PREFIX_07-exercise.pdf
+    pdf-standard: ua-1
+    callout-appearance: minimal
+    include-in-header: 
+      text: |
+        // TOC stuff
+        // Make the title centered and slightly smaller than a full heading
+        #show outline: it => {
+          show heading: it => align(center, text(size: 0.75em, it))
+          it
+        }
     include-before-body: 
       text: |
-        #show link: set text(fill: rgb("e16462"))
+        // Color links with purple from viridis plasma: 
+        // viridisLite::viridis(8, option = "plasma", begin = 0.1, end = 0.9)[3]
+        #show link: set text(fill: rgb("9a169f"))
 
         // Keep track of previous heading levels
         #let last-heading-level = state("last-heading-level", 0)
@@ -105,13 +119,23 @@ Make three plots from the `wnba` data:
 
 ::: {.callout-tip title="Answer"}
 
-These instructions were pretty generic, and you could be as fancy as you want. Here's one verison:
+These instructions were pretty generic, and you could be as fancy as you want. Here's one version:
+
+:::
 
 ```{r}
 #| label: patchwork-plots
 #| fig-width: 7
 #| fig-height: 4
 #| message: false
+#| fig-alt: |
+#|   Three-panel combined chart of 2019 WNBA player statistics. Left panel:
+#|   histogram of player ages showing a roughly bell-shaped distribution
+#|   peaking in the mid-to-late twenties. Right side (stacked): two scatter
+#|   charts both with total season minutes on the y-axis—top shows average
+#|   points per game (x) and bottom shows games played (x)—with points
+#|   colored by starter status and orange regression lines. Starters cluster
+#|   in the upper ranges of both scatterplots.
 
 p_age <- ggplot(wnba, aes(x = age)) +
   geom_histogram(
@@ -147,8 +171,6 @@ p_games <- ggplot(wnba, aes(x = games_played, y = total_minutes)) +
 
 p_age | (p_points / p_games)
 ```
-
-:::
 
 
 ## Visualizing regression
@@ -195,9 +217,8 @@ Run the code chunk below to see a plot.
 ```{r fig.path="images/"}
 #| label: recreate-me-2
 #| echo: false
-#| message: false
-#| warning: false
 #| ref.label: recreation-plot-2
+#| opts.label: true
 ```
 
 This is a coefficient plot and it shows the partial slopes (or effect) of each of the explanatory variables in the model. Holding all else equal, a one-point increase in a player's average points is associated with ≈30 more total minutes played in a season; being a starter is associated with ≈170 more total minutes played in a season; and so on.
@@ -226,6 +247,13 @@ Use `geom_pointrange()` in the chunk below to re-create the coefficient plot.
 #| label: recreation-plot-2
 #| message: false
 #| warning: false
+#| fig-alt: |
+#|   Coefficient plot showing partial effects of three predictors on total
+#|   WNBA season minutes. Point estimates with horizontal confidence intervals
+#|   on the x-axis, variable names on the y-axis (avg_points, games_played,
+#|   starterTRUE). Being a starter is the largest predictor (approximately
+#|   172 additional minutes), followed by average points (about 31 minutes
+#|   per additional point) and games played (about 15 minutes per game).
 
 model_minutes_results <- model_minutes_results |>
   filter(term != "(Intercept)")
@@ -253,6 +281,7 @@ Run the code chunk below to see a plot.
 #| echo: false
 #| ref.label: recreation-plot-3
 #| message: false
+#| opts.label: true
 ```
 
 This shows what happens to the predicted number of total minutes as a typical player increases the number of games they've played—unsurprisingly, it goes up! This is actually the same stuff we saw in the coefficient plot—the slope for `games_played` here is ≈15, so total minutes increases by 15 for each game played; the coefficient for `starter` is 172, so the line is 172 minutes higher for starters.
@@ -281,6 +310,13 @@ Use `predictions()` (from the {marginaleffects} package) and `geom_line()` and `
 
 ```{r}
 #| label: recreation-plot-3
+#| fig-alt: |
+#|   Line chart with shaded confidence ribbons showing predicted total WNBA
+#|   season minutes as a function of games played (1–34), by starter status.
+#|   Games played on the x-axis, predicted total minutes on the y-axis, with
+#|   separate lines and ribbons for starters (TRUE) and non-starters (FALSE).
+#|   The two parallel lines show starters consistently accumulate more total
+#|   minutes at any level of games played.
 
 my_predictions <- predictions(
   model_minutes,
@@ -322,12 +358,21 @@ Try one of these things for your extension:
 
 Hopefully you did something neat! Here's something I did with the different model. The slopes are different for starters vs. non-starters. Starting players accumulate total playtime faster than non-starting players.
 
+:::
+
 ```{r}
 #| label: extension-1
 #| message: false
 #| warning: false
 #| fig-width: 5
 #| fig-height: 3
+#| fig-alt: |
+#|   Line chart with confidence ribbons from an interaction model of WNBA
+#|   season minutes. Games played on the x-axis, predicted total minutes on
+#|   the y-axis, with lines for starters (orange) and non-starters (blue).
+#|   Unlike a parallel-slopes model, the lines diverge—starters accumulate
+#|   total minutes at a steeper rate, confirming the title "Starting players
+#|   accumulate game time faster."
 
 model_different <- lm(
   total_minutes ~ avg_points + (starter * games_played), 
@@ -360,11 +405,11 @@ ggplot(different_predictions, aes(x = games_played, y = estimate)) +
   theme_light()
 ```
 
-:::
-
 ::: {.callout-tip title="Answer"}
 
 And here's something I did with a correlogram:
+
+:::
 
 ```{r}
 #| label: extension-2
@@ -372,6 +417,13 @@ And here's something I did with a correlogram:
 #| warning: false
 #| fig-width: 5
 #| fig-height: 3
+#| fig-alt: |
+#|   Correlation heatmap (upper triangle only) of four WNBA player statistics:
+#|   total minutes, games played, average field goals, and age. Color encodes
+#|   correlation from blue (negative) through white (near zero) to orange
+#|   (positive); rounded values appear in each cell. Total minutes and games
+#|   played show the strongest positive correlation; age has the weakest
+#|   associations with the other variables.
 
 # Create a correlation matrix
 things_to_correlate <- wnba |>
@@ -417,5 +469,3 @@ ggplot(things_to_correlate_long, aes(x = measure2, y = measure1, fill = cor)) +
     axis.text.x = element_text(angle = 30, hjust = 0.5, vjust = 0.5)
   )
 ```
-
-:::
